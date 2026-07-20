@@ -77,36 +77,42 @@ public class WarpFieldPrecomputed {
 			return;
 		}
 
+		boolean imageJ = false;
+
 		// ImageJ is impractical for the full volume: ImageJFunctions.show() eagerly
 		// pulls every plane into an ImagePlus, so even with a multi-threaded
 		// ForkJoinPool it loads the whole (sharded, gzip, float32) volume up front and
-		// is slow. Kept for reference:
-		//     new ImageJ();
-		//     ImageJFunctions.show(field, new ForkJoinPool(32));
-
-		// Pick the center z-slice -> a 2-channel 2D image, and show each channel as its
-		// own lazily-rendered volatile source in a 2D BDV. is2D() keeps the viewer
-		// axis-aligned (2D transform handler, no out-of-plane rotation) so the single
-		// slice can't be lost in 3D. Calibrated with the x/y resolution.
-		final SharedQueue queue = new SharedQueue(Math.max(1, Runtime.getRuntime().availableProcessors() - 1));
-		final RandomAccessibleInterval<VolatileFloatType> volatileField = VolatileViews.wrapAsVolatile(field, queue);
-		final RandomAccessibleInterval<VolatileFloatType> slice = Views.hyperSlice(volatileField, 2, centerZ);
-
-		final AffineTransform3D sourceTransform = new AffineTransform3D();
-		sourceTransform.set(
-				resolution[0], 0, 0, 0,
-				0, resolution[1], 0, 0,
-				0, 0, 1, 0);
-
-		BdvStackSource<?> bdv = null;
-		for (int c = 0; c < numChannels; ++c) {
-			final RandomAccessibleInterval<VolatileFloatType> channel = Views.hyperSlice(slice, 2, c);
-			final BdvOptions options = (bdv == null)
-					? BdvOptions.options().is2D().sourceTransform(sourceTransform)
-					: BdvOptions.options().addTo(bdv).sourceTransform(sourceTransform);
-			bdv = BdvFunctions.show(channel, "w61_s109_r00 z" + centerZ + " ch" + c, options);
-			// rough display range for a displacement field; adjust in BDV as needed
-			bdv.setDisplayRange(-16, 16);
+		// is slow. 
+		if ( imageJ )
+		{
+			new ImageJ();
+			ImageJFunctions.show(field, new ForkJoinPool(32));
+		}
+		else {
+			// Pick the center z-slice -> a 2-channel 2D image, and show each channel as its
+			// own lazily-rendered volatile source in a 2D BDV. is2D() keeps the viewer
+			// axis-aligned (2D transform handler, no out-of-plane rotation) so the single
+			// slice can't be lost in 3D. Calibrated with the x/y resolution.
+			final SharedQueue queue = new SharedQueue(Math.max(1, Runtime.getRuntime().availableProcessors() - 1));
+			final RandomAccessibleInterval<VolatileFloatType> volatileField = VolatileViews.wrapAsVolatile(field, queue);
+			final RandomAccessibleInterval<VolatileFloatType> slice = Views.hyperSlice(volatileField, 2, centerZ);
+	
+			final AffineTransform3D sourceTransform = new AffineTransform3D();
+			sourceTransform.set(
+					resolution[0], 0, 0, 0,
+					0, resolution[1], 0, 0,
+					0, 0, 1, 0);
+	
+			BdvStackSource<?> bdv = null;
+			for (int c = 0; c < numChannels; ++c) {
+				final RandomAccessibleInterval<VolatileFloatType> channel = Views.hyperSlice(slice, 2, c);
+				final BdvOptions options = (bdv == null)
+						? BdvOptions.options().is2D().sourceTransform(sourceTransform)
+						: BdvOptions.options().addTo(bdv).sourceTransform(sourceTransform);
+				bdv = BdvFunctions.show(channel, "w61_s109_r00 z" + centerZ + " ch" + c, options);
+				// rough display range for a displacement field; adjust in BDV as needed
+				bdv.setDisplayRange(-5, 5);
+			}
 		}
 	}
 }
