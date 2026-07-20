@@ -15,8 +15,8 @@ filesystem convenience `N5PrecomputedReader`), so precomputed volumes open with
 ```java
 // local
 N5Reader n5 = new N5PrecomputedReader("/path/to/volume");
-n5.list("/");                               // scale keys, e.g. ["8_8_8", "16_16_16", …]
-RandomAccessibleInterval<?> img = N5Utils.open(n5, "8_8_8");   // [x, y, z, channel]
+n5.list("/"); // scale keys, e.g. ["8_8_8", "16_16_16", …]
+RandomAccessibleInterval<?> img = N5Utils.open(n5, "8_8_8"); // [x, y, z, channel]
 
 // cloud: pass the matching KeyValueAccess (e.g. from n5-aws-s3 / n5-google-cloud)
 N5Reader n5 = new PrecomputedKeyValueReader(kva, "s3://bucket/path", new GsonBuilder(), true);
