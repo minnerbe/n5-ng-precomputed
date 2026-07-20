@@ -67,6 +67,20 @@ mvn test-compile exec:java -Dexec.classpathScope=test \
 It loads `precomputed://gs://neuroglancer-janelia-flyem-hemibrain/emdata/clahe_yz/jpeg`
 (read anonymously).
 
+## Try it: a deformation field in BigDataViewer
+
+[`WarpFieldPrecomputed`](src/test/java/org/janelia/saalfeldlab/n5/precomputed/WarpFieldPrecomputed.java)
+opens a public `float32`, 2-channel, sharded (`data_encoding: gzip`) warp / flow field,
+takes its center z-section, and shows each displacement channel as its own lazily-rendered
+2D volatile BDV source (`is2D()`, here colored magenta/green):
+
+![Center z-slice of a 2-channel warp field shown as two 2D volatile BDV sources](doc/warpfield-bdv.png)
+
+```
+mvn test-compile exec:java -Dexec.classpathScope=test \
+  -Dexec.mainClass=org.janelia.saalfeldlab.n5.precomputed.WarpFieldPrecomputed
+```
+
 ## Testing
 
 `mvn test` runs in-process round-trip tests for every encoding, unsharded and sharded.
