@@ -51,6 +51,8 @@ the Zarr backend, no axis reversal is performed.
 
 ## Try it: the hemibrain in BigDataViewer
 
+![The FlyEM hemibrain volume streamed from Google Cloud Storage and rendered in BigDataViewer](doc/hemibrain-bdv.png)
+
 The interactive example
 [`HemibrainPrecomputed`](src/test/java/org/janelia/saalfeldlab/n5/precomputed/HemibrainPrecomputed.java)
 opens the public FlyEM hemibrain EM volume (JPEG + sharded) straight from Google Cloud
