@@ -1,4 +1,4 @@
-# n5-precomputed
+# n5-ng-precomputed
 
 Read [Neuroglancer precomputed](https://neuroglancer-docs.web.app/datasource/precomputed/volume.html)
 **volumes** through the [N5 API](https://github.com/saalfeldlab/n5) — locally or from any

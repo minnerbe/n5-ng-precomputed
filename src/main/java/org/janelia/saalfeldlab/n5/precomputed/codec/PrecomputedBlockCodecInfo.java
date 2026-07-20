@@ -115,7 +115,7 @@ public class PrecomputedBlockCodecInfo implements BlockCodecInfo {
 		@Override
 		public ReadData encode(final DataBlock<T> dataBlock) throws N5IOException {
 
-			throw new UnsupportedOperationException("n5-precomputed is read-only");
+			throw new UnsupportedOperationException("n5-ng-precomputed is read-only");
 		}
 
 		@Override

@@ -10,12 +10,12 @@
 	</parent>
 
 	<groupId>org.janelia.saalfeldlab</groupId>
-	<artifactId>n5-precomputed</artifactId>
+	<artifactId>n5-ng-precomputed</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 
-	<name>N5 Precomputed</name>
+	<name>N5 NG Precomputed</name>
 	<description>Neuroglancer precomputed volume backend for N5 (read-only)</description>
-	<url>https://github.com/saalfeldlab/n5-precomputed</url>
+	<url>https://github.com/saalfeldlab/n5-ng-precomputed</url>
 	<inceptionYear>2026</inceptionYear>
 	<organization>
 		<name>Saalfeld Lab</name>
@@ -58,25 +58,25 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/saalfeldlab/n5-precomputed</connection>
-		<developerConnection>scm:git:git@github.com:saalfeldlab/n5-precomputed</developerConnection>
+		<connection>scm:git:git://github.com/saalfeldlab/n5-ng-precomputed</connection>
+		<developerConnection>scm:git:git@github.com:saalfeldlab/n5-ng-precomputed</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/saalfeldlab/n5-precomputed</url>
+		<url>https://github.com/saalfeldlab/n5-ng-precomputed</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/saalfeldlab/n5-precomputed/issues</url>
+		<url>https://github.com/saalfeldlab/n5-ng-precomputed/issues</url>
 	</issueManagement>
 	<ciManagement>
 		<system>GitHub Actions</system>
-		<url>https://github.com/saalfeldlab/n5-precomputed/actions</url>
+		<url>https://github.com/saalfeldlab/n5-ng-precomputed/actions</url>
 	</ciManagement>
 
 	<properties>
 		<package-name>org.janelia.saalfeldlab.n5.precomputed</package-name>
 
 		<license.licenseName>bsd_2</license.licenseName>
-		<license.projectName>N5 Precomputed</license.projectName>
+		<license.projectName>N5 NG Precomputed</license.projectName>
 		<license.organizationName>Saalfeld Lab</license.organizationName>
 		<license.copyrightOwners>Stephan Saalfeld, Stephan Preibisch</license.copyrightOwners>
 		<!-- managed by `copy-resources` plugin  -->

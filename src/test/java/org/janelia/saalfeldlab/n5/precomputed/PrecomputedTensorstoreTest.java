@@ -42,7 +42,7 @@ public class PrecomputedTensorstoreTest {
 			// optionally generate the data via python (needs tensorstore + numpy)
 			final String python = System.getProperty("precomputed.python");
 			Assume.assumeTrue("set -Dprecomputed.dir (pre-generated) or -Dprecomputed.python to run this test", python != null);
-			final Path tmp = Files.createTempDirectory("n5-precomputed-ts");
+			final Path tmp = Files.createTempDirectory("n5-ng-precomputed-ts");
 			final Process p = new ProcessBuilder(python, "src/test/python/gen_precomputed.py", tmp.toString())
 					.redirectErrorStream(true).inheritIO().start();
 			final boolean ok = p.waitFor(180, TimeUnit.SECONDS) && p.exitValue() == 0;

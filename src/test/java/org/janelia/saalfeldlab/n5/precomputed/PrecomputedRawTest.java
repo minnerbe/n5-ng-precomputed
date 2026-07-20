@@ -28,7 +28,7 @@ public class PrecomputedRawTest {
 	@Test
 	public void testMetadataAndBlocks() throws IOException {
 
-		final Path dir = Files.createTempDirectory("n5-precomputed-raw");
+		final Path dir = Files.createTempDirectory("n5-ng-precomputed-raw");
 		final long[] size = {5, 4, 3};
 		final int[] chunk = {2, 2, 2};
 		final long[] offset = {0, 0, 0};
@@ -64,7 +64,7 @@ public class PrecomputedRawTest {
 	@Test
 	public void testVoxelOffset() throws IOException {
 
-		final Path dir = Files.createTempDirectory("n5-precomputed-raw-offset");
+		final Path dir = Files.createTempDirectory("n5-ng-precomputed-raw-offset");
 		final long[] size = {3, 3, 2};
 		final int[] chunk = {2, 2, 2};
 		final long[] offset = {10, 20, 30};
@@ -83,7 +83,7 @@ public class PrecomputedRawTest {
 	@Test
 	public void testMissingBlockReturnsNull() throws IOException {
 
-		final Path dir = Files.createTempDirectory("n5-precomputed-raw-missing");
+		final Path dir = Files.createTempDirectory("n5-ng-precomputed-raw-missing");
 		final long[] size = {4, 2, 2};
 		final int[] chunk = {2, 2, 2};
 		final long[] offset = {0, 0, 0};
