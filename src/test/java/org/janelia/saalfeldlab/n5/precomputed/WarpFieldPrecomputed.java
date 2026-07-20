@@ -24,15 +24,16 @@ import net.imglib2.view.Views;
 
 /**
  * Real-life example: open a Neuroglancer precomputed <em>deformation / warp
- * field</em> from Google Cloud Storage and display it in BigDataViewer, one
- * volatile source per channel.
+ * field</em> from Google Cloud Storage and display its center z-slice in
+ * BigDataViewer as per-channel 2D volatile sources.
  * <p>
  * The volume at {@code gs://janelia-spark-test/warp_flow_precomputed/w61_s109_r00}
  * is {@code float32}, 2 channels (the x/y displacement components), single scale,
  * raw-encoded and sharded with {@code data_encoding: gzip} — so this exercises the
  * float32 + sharded + gzip-data read path over a cloud backend. The reader presents
- * it as a 4D {@code [x, y, z, channel]} dataset; each channel is hyper-sliced out
- * and shown as its own lazily-rendered volatile BDV source.
+ * it as a 4D {@code [x, y, z, channel]} dataset; the center z-slice is hyper-sliced
+ * out and each channel is shown as its own lazily-rendered 2D volatile BDV source
+ * ({@code is2D()}).
  * <p>
  * Run interactively:
  * <pre>
@@ -64,41 +65,46 @@ public class WarpFieldPrecomputed {
 		final RandomAccessibleInterval<FloatType> field = N5Utils.openVolatile(n5, key);
 		final long[] dims = field.dimensionsAsLongArray();
 		final int numChannels = (int)dims[3];
+		final long centerZ = 42; // center section of the 82-slice stack
 
 		// probe the center voxel to force a real (sharded, gzip, float32) chunk read
 		final RandomAccess<FloatType> ra = field.randomAccess();
-		ra.setPosition(new long[]{dims[0] / 2, dims[1] / 2, dims[2] / 2, 0});
-		System.out.println("center sample (channel 0) = " + ra.get().get());
+		ra.setPosition(new long[]{dims[0] / 2, dims[1] / 2, centerZ, 0});
+		System.out.println("sample @ (center, z=" + centerZ + ", ch=0) = " + ra.get().get());
 
 		if (GraphicsEnvironment.isHeadless()) {
 			System.out.println("headless environment: skipping display");
 			return;
 		}
 
-		// ImageJ is impractical here: ImageJFunctions.show() eagerly pulls every plane
-		// into an ImagePlus, so even with a multi-threaded ForkJoinPool it loads the
-		// whole (sharded, gzip, float32) volume up front and is slow. Kept for reference:
+		// ImageJ is impractical for the full volume: ImageJFunctions.show() eagerly
+		// pulls every plane into an ImagePlus, so even with a multi-threaded
+		// ForkJoinPool it loads the whole (sharded, gzip, float32) volume up front and
+		// is slow. Kept for reference:
 		//     new ImageJ();
 		//     ImageJFunctions.show(field, new ForkJoinPool(32));
 
-		// Instead show each channel as its own lazily-rendered volatile BDV source.
-		// The field is anisotropic (resolution in nm), so calibrate the source.
+		// Pick the center z-slice -> a 2-channel 2D image, and show each channel as its
+		// own lazily-rendered volatile source in a 2D BDV. is2D() keeps the viewer
+		// axis-aligned (2D transform handler, no out-of-plane rotation) so the single
+		// slice can't be lost in 3D. Calibrated with the x/y resolution.
 		final SharedQueue queue = new SharedQueue(Math.max(1, Runtime.getRuntime().availableProcessors() - 1));
 		final RandomAccessibleInterval<VolatileFloatType> volatileField = VolatileViews.wrapAsVolatile(field, queue);
+		final RandomAccessibleInterval<VolatileFloatType> slice = Views.hyperSlice(volatileField, 2, centerZ);
 
 		final AffineTransform3D sourceTransform = new AffineTransform3D();
 		sourceTransform.set(
 				resolution[0], 0, 0, 0,
 				0, resolution[1], 0, 0,
-				0, 0, resolution[2], 0);
+				0, 0, 1, 0);
 
 		BdvStackSource<?> bdv = null;
 		for (int c = 0; c < numChannels; ++c) {
-			final RandomAccessibleInterval<VolatileFloatType> channel = Views.hyperSlice(volatileField, 3, c);
+			final RandomAccessibleInterval<VolatileFloatType> channel = Views.hyperSlice(slice, 2, c);
 			final BdvOptions options = (bdv == null)
-					? BdvOptions.options().sourceTransform(sourceTransform)
-					: BdvOptions.options().sourceTransform(sourceTransform).addTo(bdv);
-			bdv = BdvFunctions.show(channel, "w61_s109_r00 ch" + c, options);
+					? BdvOptions.options().is2D().sourceTransform(sourceTransform)
+					: BdvOptions.options().addTo(bdv).sourceTransform(sourceTransform);
+			bdv = BdvFunctions.show(channel, "w61_s109_r00 z" + centerZ + " ch" + c, options);
 			// rough display range for a displacement field; adjust in BDV as needed
 			bdv.setDisplayRange(-16, 16);
 		}
