@@ -1,0 +1,36 @@
+name: platform-test
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "*-[0-9]+.*"
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Python interop dependencies
+        run: pip install --no-input tensorstore numpy
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: '8'
+          distribution: 'zulu'
+          cache: 'maven'
+      - name: Maven test (with tensorstore interop)
+        run: mvn -B clean test -Dprecomputed.python=python

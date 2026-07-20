@@ -1,0 +1,25 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs
+hs_err_pid*
+
+/target/
+
+.classpath
+.project
+.settings
+.idea
+*.iml
+
+# license file copied to basedir at build time by maven-resources-plugin
+/LICENSE.md
+
+# python interop
+__pycache__/
+*.pyc
+.venv/
